@@ -51,7 +51,6 @@ module Slackistrano
       channels.each do |channel|
         post(payload.merge(channel: channel))
       end
-      raise "#{payload}"
     end
 
     private ##################################################
