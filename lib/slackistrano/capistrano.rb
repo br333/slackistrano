@@ -38,9 +38,9 @@ module Slackistrano
       return if payload.nil?
 
       payload = {
-        username: @messaging.username,
-        icon_url: @messaging.icon_url,
-        icon_emoji: @messaging.icon_emoji,
+        # username: @messaging.username,
+        # icon_url: @messaging.icon_url,
+        icon_url: 'https://avatars2.githubusercontent.com/u/16705?v=4&s=40'
       }.merge(payload)
 
       channels = Array(@messaging.channels_for(action))
@@ -51,6 +51,7 @@ module Slackistrano
       channels.each do |channel|
         post(payload.merge(channel: channel))
       end
+      raise "#{payload}"
     end
 
     private ##################################################
@@ -66,7 +67,7 @@ module Slackistrano
         response = post_to_slack(payload)
       rescue => e
         backend.warn("[slackistrano] Error notifying Slack!")
-        backend.warn("[slackistrano]   Error: #{e.inspect}")
+        backend.info("[slackistrano]   Error: #{e}")
       end
 
       if response && response.code !~ /^2/
@@ -87,11 +88,14 @@ module Slackistrano
     end
 
     def post_to_slack_as_slackbot(payload = {})
-      uri = URI(URI.encode("https://#{@messaging.team}.slack.com/services/hooks/slackbot?token=#{@messaging.token}&channel=#{payload[:channel]}"))
-      text = (payload[:attachments] || [payload]).collect { |a| a[:text] }.join("\n")
-      Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-        http.request_post uri, text
-      end
+      # uri = URI(URI.encode("https://#{@messaging.team}.slack.com/services/hooks/slackbot?token=#{@messaging.token}&channel=#{payload[:channel]}"))
+      uri = URI("https://slack.com/api/chat.postMessage?token=#{@messaging.token}&pretty=1")
+      Net::HTTP.post_form(uri, payload)
+      # text = (payload[:attachments] || [payload]).collect { |a| a[:text] }.join("\n")
+      # raise "#{text}"
+      # Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+      #   http.request_post uri, text
+      # end
     end
 
     def post_to_slack_as_webhook(payload = {})
