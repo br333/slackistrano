@@ -38,9 +38,8 @@ module Slackistrano
       return if payload.nil?
 
       payload = {
-        # username: @messaging.username,
-        # icon_url: @messaging.icon_url,
-        icon_url: 'https://avatars2.githubusercontent.com/u/16705?v=4&s=40'
+        username: @messaging.username,
+        icon_url: @messaging.icon_url
       }.merge(payload)
 
       channels = Array(@messaging.channels_for(action))
